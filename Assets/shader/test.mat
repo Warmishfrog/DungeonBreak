@@ -52,13 +52,21 @@ Material:
         m_Texture: {fileID: 2800000, guid: 6d6124d399ca0be45ab35866fdd64275, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_25986ba63405433c8a68315560fece33_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 96a93daf3bca16f41981ebb4d031896e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_78ca01f086f049958db176cbba37d100_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 2829bb779a94ba34e9f5ae05ab05000a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 0}
-    - _TilingScale: {r: 100, g: 100, b: 0, a: 0}
-    - _TilingScale2: {r: 100, g: 100, b: 0, a: 0}
+    - _TilingScale: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _TilingScale2: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _scroll_velocity: {r: 0.1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -5,29 +5,34 @@ using UnityEngine;
 public class Door : MonoBehaviour, IInteractable
 {
     // Drag the required KeyItem asset here in the Inspector
-#nullable enable
+    #nullable enable
     public KeyItem? requiredKey;
-#nullable disable
+    #nullable disable
 
-    private DoorStateMachine doorStateMachine;
+    public DoorStateMachine doorStateMachine;
+
+    [SerializeField] public IState StartingState;
 
     public UserInterfaceText UIText;
 
-    // This method would be called by player's interaction script
+    [SerializeField] private bool isClosable = true; // Whether the door can be closed by the player
 
-    public void Awake()
+    public void Start()
     {
+        doorStateMachine.ChangeState(StartingState); // Initialize with the door closed state
     }
 
+    /// <summary>
+    /// This method would be called by player's interaction script
+    /// </summary>
     public void Interact()
     {
 
         // Check the central inventory
-        if (Inventory.instance.HasKey(requiredKey) || requiredKey is null)
+        if (Inventory.instance.HasKey(requiredKey) || requiredKey == null)
         {
             // Add your door opening logic here (e.g., play animation, disable collider)
-            GameObject doorHinge = transform.parent.gameObject;
-            GameObject doorParent = doorHinge.transform.parent.gameObject;
+            GameObject doorParent = transform.parent.gameObject;
             Animator animator = doorParent.GetComponent<Animator>();
 
             if (doorStateMachine.CurrentState == doorStateMachine.DoorCloseState)
@@ -35,9 +40,9 @@ public class Door : MonoBehaviour, IInteractable
                 // Open the door
                 string msg = "Key accepted. Opening door.";
                 Debug.Log(msg);
-                UIText.SetText(msg);
+                //UIText.SetText(msg);
 
-                animator.SetTrigger("doorOpen");
+                animator.SetTrigger("DoorOpen");
 
                 doorStateMachine.ChangeState(doorStateMachine.DoorOpenState);
             }
@@ -46,9 +51,9 @@ public class Door : MonoBehaviour, IInteractable
                 // Close the door
                 string msg = "Closing door.";
                 Debug.Log(msg);
-                UIText.SetText(msg);
+                //UIText.SetText(msg);
 
-                animator.SetTrigger("doorClose");
+                animator.SetTrigger("DoorClosed");
 
                 doorStateMachine.ChangeState(doorStateMachine.DoorCloseState);
             }

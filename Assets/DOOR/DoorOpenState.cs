@@ -11,6 +11,7 @@ public class DoorOpenState : IState
         //play sound
         Debug.Log("Door is now open.");
         //doorStateMachine..SetTrigger("doorOpen"); // Assuming you have an "OpenDoor" trigger in your Animator
+
         
     }
 

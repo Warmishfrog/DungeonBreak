@@ -8,39 +8,24 @@ public class DoorStateMachine : MonoBehaviour
 {
     protected Animator Animator { get; private set; }
 
-    public IState CurrentState { get; private set; }
-    public DoorOpenState DoorOpenState { get; private set; }
-    public DoorCloseState DoorCloseState { get; private set; }
+    [SerializeField ]public IState CurrentState;
+    public DoorOpenState DoorOpenState;
+    public DoorCloseState DoorCloseState;
+
+    //public static DoorStateMachine Instance;
 
     private void Awake()
     {
-
         DoorOpenState = new DoorOpenState();
         DoorCloseState = new DoorCloseState();
-
-        CurrentState = DoorCloseState;
-    }
-
-    private void Start()
-    {
-        ChangeState(DoorCloseState); // Initialize with the door closed state
-    }
-
-    void Update()
-    {
-        CurrentState?.UpdateState(this);        
     }
 
     public void ChangeState(IState newState)
     {
-        if (CurrentState is not null)
-        {
-            CurrentState.Exit(this);
-        }
+        CurrentState?.Exit(this);        
         CurrentState = newState;
         CurrentState.Enter(this);
     }
-
 }
 
 public interface IState

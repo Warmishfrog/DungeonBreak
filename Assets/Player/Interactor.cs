@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 interface IInteractable
@@ -13,16 +14,22 @@ public class Interactor : MonoBehaviour
     [SerializeField] private float interactRange;
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private LayerMask interactableLayers;
+    [SerializeField] private UserInterfaceText UIPrompt;
+
+    private IInteractable currentInteractable;
 
     void Update()
     {
-        if (Input.GetKeyDown(interactKey))
+        CheckForInteractable(); // always run this to update UI
+
+        if (Input.GetKeyDown(interactKey) && currentInteractable != null)
         {
-            TryInteract();
-        }        
+            currentInteractable.Interact();
+        }
     }
 
-    private void TryInteract()
+
+    private void CheckForInteractable()
     {
         Ray ray = new Ray(interactorSource.position, interactorSource.forward);
 
@@ -30,9 +37,14 @@ public class Interactor : MonoBehaviour
         {
             if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
             {
-                interactable.Interact();
+                currentInteractable = interactable;
+                UIPrompt.SetText($"Press {interactKey} to interact");
+                return;
             }
         }
+
+        currentInteractable = null;
+        UIPrompt.SetText(""); // Clear the UI prompt if no interactable is found
     }
 
     private void OnDrawGizmosSelected()
