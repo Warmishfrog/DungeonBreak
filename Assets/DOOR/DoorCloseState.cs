@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class DoorCloseState : IState
 {
-    public void Enter(DoorStateMachine doorStateMachine)
+    public void Enter(DoorStateMachine doorStateMachine, Animator animator)
     {
         //play animation
         //play sound
-        Debug.Log("Door is now closed.");
+        // Close the door
+        string msg = "Closing door.";
+        Debug.Log(msg);
+        //UIText.SetText(msg);
+
+        animator.SetTrigger("DoorClosed");
     }
 
     public void Exit(DoorStateMachine doorStateMachine)

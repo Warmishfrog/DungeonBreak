@@ -10,7 +10,7 @@ public class KeyPickup : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        UIText.SetText($"picked up {key}");
+        UIText.ShowText($"picked up {key}");
 
         //add item to inventory
         Inventory.instance.AddKey(key);

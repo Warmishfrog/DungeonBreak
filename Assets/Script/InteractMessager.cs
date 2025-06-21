@@ -11,7 +11,7 @@ public class InteractMessager : MonoBehaviour, IInteractable
     public void Interact()
     {
         Debug.Log(InteractMessage);
-        UIText.SetText(InteractMessage);
+        UIText.ShowText(InteractMessage);
 
     }
 

@@ -5,14 +5,16 @@ using UnityEngine;
 public class DoorOpenState : IState
 {
 
-    public void Enter(DoorStateMachine doorStateMachine)
+    public void Enter(DoorStateMachine doorStateMachine, Animator animator)
     {
-        //play animation
-        //play sound
-        Debug.Log("Door is now open.");
-        //doorStateMachine..SetTrigger("doorOpen"); // Assuming you have an "OpenDoor" trigger in your Animator
+        // Open the door
+        string msg = "Opening door.";
+        Debug.Log(msg);
+        //UIText.SetText(msg);
 
-        
+        animator.SetTrigger("DoorOpen");
+
+        //TODO: play sound
     }
 
     public void Exit(DoorStateMachine doorStateMachine)

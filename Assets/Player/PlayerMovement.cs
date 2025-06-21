@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float groundDrag = 4f;
 
+    [SerializeField] private float maxBunnyhopSpeed = 14f;
+    [SerializeField] private float bunnyhopAcceleration = 1.1f; // multiplier
+
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float jumpCooldown = 0.25f;
     [SerializeField] private float airMultiplier = 0.4f; // Multiplier for speed in the air
@@ -147,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //limiting speed on ground or in-air
-        else
+        if (grounded)
         {
 
             Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -155,6 +158,16 @@ public class PlayerMovement : MonoBehaviour
             if (flatVel.magnitude > moveSpeed)
             {
                 Vector3 limitedVel = flatVel.normalized * moveSpeed;
+                rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+            }
+        }
+        else 
+        {
+            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            if (flatVel.magnitude > maxBunnyhopSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * maxBunnyhopSpeed;
                 rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
             }
         }
@@ -166,9 +179,23 @@ public class PlayerMovement : MonoBehaviour
     {
         exitingSlope = true;
 
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z); // Reset y velocity before jumping
 
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        rb.velocity = horizontalVelocity + Vector3.up * jumpForce;
+
+
+        float currentSpeed = horizontalVelocity.magnitude;
+        if (currentSpeed < maxBunnyhopSpeed)
+        {
+            float newSpeed = Mathf.Min(currentSpeed * bunnyhopAcceleration, maxBunnyhopSpeed);
+            Vector3 newHorizontalVelocity = horizontalVelocity.normalized * newSpeed;
+            rb.velocity = newHorizontalVelocity + Vector3.up * rb.velocity.y;
+        }
+
+        //rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z); // Reset y velocity before jumping
+
+        //rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     private void ResetJump()

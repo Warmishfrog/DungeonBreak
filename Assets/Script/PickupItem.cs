@@ -11,7 +11,7 @@ public class PickupItem : MonoBehaviour, IInteractable
     {
 
         Debug.Log("picked up");
-        UIText.SetText("picked up");
+        UIText.ShowText("picked up");
 
         //add item to inventory
 

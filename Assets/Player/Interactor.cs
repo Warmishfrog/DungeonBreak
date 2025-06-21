@@ -10,7 +10,7 @@ interface IInteractable
 
 public class Interactor : MonoBehaviour
 {
-    [SerializeField] private Transform interactorSource;
+    [SerializeField] private Transform interactorSource; //from camera or player
     [SerializeField] private float interactRange;
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private LayerMask interactableLayers;
@@ -28,7 +28,6 @@ public class Interactor : MonoBehaviour
         }
     }
 
-
     private void CheckForInteractable()
     {
         Ray ray = new Ray(interactorSource.position, interactorSource.forward);
@@ -38,13 +37,13 @@ public class Interactor : MonoBehaviour
             if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
             {
                 currentInteractable = interactable;
-                UIPrompt.SetText($"Press {interactKey} to interact");
+                UIPrompt.ShowText($"Press {interactKey} to interact");
                 return;
             }
         }
 
         currentInteractable = null;
-        UIPrompt.SetText(""); // Clear the UI prompt if no interactable is found
+        UIPrompt.ShowText(""); // Clear the UI prompt if no interactable is found
     }
 
     private void OnDrawGizmosSelected()

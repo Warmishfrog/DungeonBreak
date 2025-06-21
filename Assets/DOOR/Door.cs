@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class Door : MonoBehaviour, IInteractable
 {
-    // Drag the required KeyItem asset here in the Inspector
-    #nullable enable
-    public KeyItem? requiredKey;
-    #nullable disable
-
     public DoorStateMachine doorStateMachine;
-
-    [SerializeField] public IState StartingState;
-
     public UserInterfaceText UIText;
+    [SerializeField] private bool isClosable = true; 
 
-    [SerializeField] private bool isClosable = true; // Whether the door can be closed by the player
+    private ILockable doorLock;
 
     public void Start()
     {
-        doorStateMachine.ChangeState(StartingState); // Initialize with the door closed state
+        //TODO: serialize an option for starting state
+        doorLock = GetComponent<ILockable>(); // Can be null if no lock
+
+        if (doorLock != null && doorLock.IsLocked)        
+            doorStateMachine.ChangeState(doorStateMachine.DoorLockedState);    
+        
+        else        
+            doorStateMachine.ChangeState(doorStateMachine.DoorCloseState);
+        
     }
 
     /// <summary>
@@ -27,44 +28,81 @@ public class Door : MonoBehaviour, IInteractable
     /// </summary>
     public void Interact()
     {
-
-        // Check the central inventory
-        if (Inventory.instance.HasKey(requiredKey) || requiredKey == null)
+        if (doorLock != null && doorLock.IsLocked)
         {
-            // Add your door opening logic here (e.g., play animation, disable collider)
-            GameObject doorParent = transform.parent.gameObject;
-            Animator animator = doorParent.GetComponent<Animator>();
-
-            if (doorStateMachine.CurrentState == doorStateMachine.DoorCloseState)
-            {
-                // Open the door
-                string msg = "Key accepted. Opening door.";
-                Debug.Log(msg);
-                //UIText.SetText(msg);
-
-                animator.SetTrigger("DoorOpen");
-
-                doorStateMachine.ChangeState(doorStateMachine.DoorOpenState);
-            }
-            else if (doorStateMachine.CurrentState == doorStateMachine.DoorOpenState)
-            {
-                // Close the door
-                string msg = "Closing door.";
-                Debug.Log(msg);
-                //UIText.SetText(msg);
-
-                animator.SetTrigger("DoorClosed");
-
-                doorStateMachine.ChangeState(doorStateMachine.DoorCloseState);
-            }
+            TryUnlock();
+            return;
         }
         else
         {
-            string msg = $"This door requires the {requiredKey.keyName}.";
-            Debug.Log(msg);
-            UIText.SetText(msg);
+            switch (doorStateMachine.CurrentState)
+            {
+                case DoorOpenState _:
+                    // If the door is open, close it
+                    doorStateMachine.ChangeState(doorStateMachine.DoorCloseState);
+                    break;
 
-            // Play a "locked" sound effect, show a message, etc.
+                case DoorCloseState _:
+                    // If the door is closed, open it
+                    if (isClosable) doorStateMachine.ChangeState(doorStateMachine.DoorOpenState);
+                    
+                    break;
+                default:
+                    Debug.LogWarning("Unknown door state.");
+                    break;
+            }
         }
+    }
+
+    public bool TryUnlock()
+    {
+        if (doorLock == null)
+            return true;
+
+        bool unlocked = doorLock.TryUnlock();
+        if (unlocked)
+        {
+            Debug.Log("Door unlocked.");
+            UIText.ShowText("Door unlocked.");
+            doorStateMachine.ChangeState(doorStateMachine.DoorOpenState);
+        }
+        else
+        {
+            string msg = doorLock.RequiredKey != null ?
+                $"This door requires the {doorLock.RequiredKey.keyName}." :
+                "This door can't be opened.";
+            UIText.ShowText(msg);
+        }
+
+        return unlocked;
+
+        /*
+        // Check the central inventory
+        if (Inventory.instance.HasKey(requiredKey))
+        {
+            // If the door is locked, unlock it
+            Debug.Log("Door unlocked.");
+            UIText.ShowText("Door unlocked.");
+
+            isLocked = false;
+            if (lockObj != null) lockObj.SetActive(false); // Assuming lockObj is the GameObject representing the lock
+
+            doorStateMachine.ChangeState(doorStateMachine.DoorOpenState);            
+            
+            return true;
+        }
+        else
+        {
+            string msg = requiredKey != null ? $"This door requires the {requiredKey.keyName}.": "This door can't be opened.";
+            Debug.Log(msg);
+            UIText.ShowText(msg);
+            return false;
+        }
+        //*/
+    }
+
+    public void EnableLock()
+    {
+        throw new System.NotImplementedException();
     }
 }

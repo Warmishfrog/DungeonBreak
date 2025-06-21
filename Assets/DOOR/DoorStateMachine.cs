@@ -6,11 +6,13 @@ using UnityEngine.Playables;
 
 public class DoorStateMachine : MonoBehaviour
 {
-    protected Animator Animator { get; private set; }
+    public Animator Animator;
 
     [SerializeField ]public IState CurrentState;
+
     public DoorOpenState DoorOpenState;
     public DoorCloseState DoorCloseState;
+    public DoorLockedState DoorLockedState;
 
     //public static DoorStateMachine Instance;
 
@@ -18,19 +20,20 @@ public class DoorStateMachine : MonoBehaviour
     {
         DoorOpenState = new DoorOpenState();
         DoorCloseState = new DoorCloseState();
+        DoorLockedState = new DoorLockedState();
     }
 
     public void ChangeState(IState newState)
     {
         CurrentState?.Exit(this);        
         CurrentState = newState;
-        CurrentState.Enter(this);
+        CurrentState.Enter(this, Animator);
     }
 }
 
 public interface IState
 {
-    void Enter(DoorStateMachine doorStateMachine);
+    void Enter(DoorStateMachine doorStateMachine, Animator animator);
     void Exit(DoorStateMachine doorStateMachine);
     void UpdateState(DoorStateMachine doorStateMachine);
 }
