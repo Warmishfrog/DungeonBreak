@@ -26,7 +26,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Grounded Check")]
     public float playerHeight;
     [SerializeField] private LayerMask whatIsGround;
-    bool grounded;
+    [SerializeField] private bool grounded;
+    [SerializeField] private bool grounded2;
+    Vector3 groundCheckPosition; // Optional: Transform to visualize ground check
+    [SerializeField] private float groundCheckDistance = 0.3f; // Distance for ground check
 
     [Header("Slope Handling")]
     public float maxSlopeAngle = 45f; // Maximum slope angle the player can walk on
@@ -54,12 +57,17 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; // Prevent the Rigidbody from rotating
+
+        
     }
 
     private void Update()
     {
         //ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+
+        groundCheckPosition = transform.position + Vector3.down;
+        grounded2 = Physics.CheckSphere(groundCheckPosition, groundCheckDistance, whatIsGround);
 
         MyInput();
         SpeedControl();
@@ -161,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
             }
         }
+        //bunnyhopping
         else 
         {
             Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -224,4 +233,14 @@ public class PlayerMovement : MonoBehaviour
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
     #endregion
+
+    /// <summary>
+    /// debug ground check sphere in the editor
+    /// </summary>
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(groundCheckPosition, groundCheckDistance);
+    }
 }
+
